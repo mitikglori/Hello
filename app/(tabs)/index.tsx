@@ -1,17 +1,14 @@
 import { Image } from 'expo-image';
 import { useCallback, useMemo, useReducer } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-
-type Pokemon = {
-  id: string;
-  name: string;
-  type: string;
-  power: number;
-};
+import { PokemonList } from '@/components/pokemon/pokemon-list';
+import { PokemonTeam } from '@/components/pokemon/pokemon-team';
+import { TeamSummary } from '@/components/pokemon/team-summary';
+import type { Pokemon } from '@/components/pokemon/types';
 
 type TeamState = {
   team: Pokemon[];
@@ -117,97 +114,6 @@ export default function HomeScreen() {
   );
 }
 
-type PokemonListProps = {
-  pokemon: Pokemon[];
-  actionLabel: string;
-  onAction: (pokemon: Pokemon) => void;
-};
-
-function PokemonList({ pokemon, actionLabel, onAction }: PokemonListProps) {
-  if (pokemon.length === 0) {
-    return (
-      <ThemedView style={styles.emptyState}>
-        <ThemedText>Every Pokémon is already on your team. Time to train!</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  return (
-    <View style={styles.cardStack}>
-      {pokemon.map((item) => (
-        <PokemonCard key={item.id} pokemon={item} actionLabel={actionLabel} onPress={onAction} />
-      ))}
-    </View>
-  );
-}
-
-type PokemonTeamProps = {
-  team: Pokemon[];
-  onRelease: (id: string) => void;
-  emptyHint: string;
-};
-
-function PokemonTeam({ team, onRelease, emptyHint }: PokemonTeamProps) {
-  if (team.length === 0) {
-    return (
-      <ThemedView style={styles.emptyState}>
-        <ThemedText>{emptyHint}</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  return (
-    <View style={styles.cardStack}>
-      {team.map((pokemon) => (
-        <PokemonCard
-          key={pokemon.id}
-          pokemon={pokemon}
-          actionLabel="Release"
-          onPress={(member) => onRelease(member.id)}
-        />
-      ))}
-    </View>
-  );
-}
-
-type TeamSummaryProps = {
-  teamSize: number;
-  power: number;
-  typeSummary: string;
-};
-
-function TeamSummary({ teamSize, power, typeSummary }: TeamSummaryProps) {
-  return (
-    <ThemedView style={styles.summaryCard}>
-      <ThemedText type="subtitle">Team Snapshot</ThemedText>
-      <ThemedText>Members recruited: {teamSize}</ThemedText>
-      <ThemedText>Total combined power: {power}</ThemedText>
-      <ThemedText>{typeSummary}</ThemedText>
-    </ThemedView>
-  );
-}
-
-type PokemonCardProps = {
-  pokemon: Pokemon;
-  actionLabel: string;
-  onPress?: (pokemon: Pokemon) => void;
-};
-
-function PokemonCard({ pokemon, actionLabel, onPress }: PokemonCardProps) {
-  const handlePress = useCallback(() => {
-    onPress?.(pokemon);
-  }, [onPress, pokemon]);
-
-  return (
-    <Pressable onPress={handlePress} style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}>
-      <ThemedText type="defaultSemiBold">{pokemon.name}</ThemedText>
-      <ThemedText>{pokemon.type}</ThemedText>
-      <ThemedText>Power: {pokemon.power}</ThemedText>
-      <ThemedText style={styles.cardAction}>{actionLabel}</ThemedText>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   titleContainer: {
     gap: 4,
@@ -216,33 +122,6 @@ const styles = StyleSheet.create({
   section: {
     gap: 12,
     marginBottom: 24,
-  },
-  cardStack: {
-    gap: 12,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  cardPressed: {
-    transform: [{ scale: 0.98 }],
-    opacity: 0.8,
-  },
-  cardAction: {
-    marginTop: 8,
-  },
-  summaryCard: {
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    gap: 4,
-  },
-  emptyState: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   headerImage: {
     height: 160,
